@@ -22,6 +22,7 @@ jobs:
       matrix:
         site:
           - https://hostaroast.co.uk/api/health
+          - https://askremi.co.uk/api/health
     steps:
       - name: Check
         env:
