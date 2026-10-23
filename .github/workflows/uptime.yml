@@ -23,6 +23,7 @@ jobs:
         site:
           - https://hostaroast.co.uk/api/health
           - https://askremi.co.uk/api/health
+          - https://outputapps.io/api/health
     steps:
       - name: Check
         env:
