@@ -1,0 +1,39 @@
+name: Uptime
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+    - cron: "17 6 1 * *"
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Check this URL instead (a broken one tests the alert email)
+        required: false
+
+permissions: {}
+
+jobs:
+  check:
+    if: github.event.schedule != '17 6 1 * *'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        site:
+          - https://hostaroast.co.uk/api/health
+    steps:
+      - name: Check
+        env:
+          URL: ${{ inputs.url || matrix.site }}
+        run: curl -fsS --max-time 20 --retry 3 --retry-delay 30 --retry-all-errors "$URL"
+
+  keep-schedule-enabled:
+    if: github.event.schedule == '17 6 1 * *'
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/$GITHUB_REPOSITORY/actions/workflows/uptime.yml/enable"
